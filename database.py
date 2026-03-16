@@ -11,6 +11,7 @@ SessionLocal = sessionmaker(bind=engine)
 class Base(DeclarativeBase):
     pass
 
+
 class User(Base):
     __tablename__ = "users"
  
@@ -24,6 +25,7 @@ class User(Base):
  
     def __repr__(self):
         return f"<User username={self.username} is_admin={self.is_admin}>"
+
 
 class GroupKey(Base):
     __tablename__ = "group_keys"
@@ -50,8 +52,10 @@ class Pin(Base):
     def __repr__(self):
         return f"<Pin pinterest_id={self.pinterest_id} posted_by={self.posted_by}>"
 
+
 def init_db():
     Base.metadata.create_all(bind=engine)
+
 
 def create_user(username: str,
                 password_hash: str,
@@ -73,13 +77,16 @@ def create_user(username: str,
         session.refresh(user)
         return user
 
+
 def get_user(username: str) -> User | None:
     with SessionLocal as session:
         return session.query(User).filter_by(username=username).first()
 
+
 def get_all_users() -> list[User]:
     with SessionLocal as session:
         return session.query(User).all
+
 
 def delete_user(username: str) -> bool:
     with SessionLocal as session:
@@ -93,6 +100,7 @@ def delete_user(username: str) -> bool:
         session.commit()
 
         return True
+
 
 def save_wrapped_key(username: str, wrapped_key: bytes, version: int = 1):
     with SessionLocal as session:
@@ -111,14 +119,17 @@ def save_wrapped_key(username: str, wrapped_key: bytes, version: int = 1):
             ))
         session.commit()
 
+
 def get_wrapped_key(username: str) -> bytes | None:
     with SessionLocal as session:
         return session.query(GroupKey).filter_by(username=username).first()
+
 
 def get_current_key_version(username: str) -> int:
     with SessionLocal as session:
         row = session.query(GroupKey).filter_by(username=username).first()
         return row.wrapped_key if row else None
+
 
 def get_all_member_certificates() -> list[bytes]:
     with SessionLocal as session:
@@ -127,6 +138,7 @@ def get_all_member_certificates() -> list[bytes]:
 
         )
         return [m.certificate for m in members]
+
 
 def save_pin(pinterest_id: str, posted_by: str, board_id: str) -> Pin:
     with SessionLocal as session:
@@ -140,9 +152,11 @@ def save_pin(pinterest_id: str, posted_by: str, board_id: str) -> Pin:
         session.refresh(pin)
         return pin
 
+
 def get_all_pins() -> list[Pin]: 
     with SessionLocal as session:
         return session.query(Pin).all
+
 
 def pin_exists(pinterest_id: str) -> bool:
     with SessionLocal as session:
