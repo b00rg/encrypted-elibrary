@@ -1,0 +1,41 @@
+/* ── Variables ─────────────────────────────────────────────────────── */
+:root {
+  --bg:             #faf7f0;
+  --bg-card:        #ffffff;
+  --bg-header:      rgba(250, 247, 240, 0.92);
+  --bg-input:       #f4f0e8;
+  --text:           #331b0d;
+  --text-muted:     #7a6450;
+  --accent:         #8c7753;
+  --accent-hover:   #6b5940;
+  --accent-light:   #e8dfc9;
+  --danger:         #c0392b;
+  --danger-hover:   #9b2820;
+  --success:        #5a8a5a;
+  --shadow-sm:      0 1px 4px rgba(51,27,13,0.07);
+  --shadow-md:      0 4px 16px rgba(51,27,13,0.10);
+  --shadow-lg:      0 8px 32px rgba(51,27,13,0.16);
+  --radius-sm:      8px;
+  --radius-md:      12px;
+  --radius-lg:      20px;
+  --transition:     all 0.22s ease;
+  --header-height:  68px;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+
+a { color: var(--accent); text-decoration: none; transition: var(--transition); }
+a:hover { color: var(--accent-hover); }

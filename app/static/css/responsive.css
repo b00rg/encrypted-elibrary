@@ -1,0 +1,25 @@
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .header-search { max-width: 280px; }
+}
+
+@media (max-width: 640px) {
+  .header { padding: 0 16px; gap: 10px; }
+  .header-logo span { display: none; }
+  .header-search { max-width: none; flex: 1; }
+  .nav-btn span { display: none; }
+  .nav-btn { padding: 8px; }
+  .auth-card { border-radius: var(--radius-md); }
+  .auth-header, .auth-body { padding-left: 24px; padding-right: 24px; }
+  .auth-tabs { margin-left: 24px; margin-right: 24px; }
+  .book-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+  .container { padding: 0 16px; }
+  .main-content { padding-top: calc(var(--header-height) + 20px); }
+  .modal-body { padding: 20px 20px 28px; }
+  .pending-card { padding: 40px 28px; }
+  .users-table th, .users-table td { padding: 12px 14px; }
+}
+
+@media (max-width: 400px) {
+  .book-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}

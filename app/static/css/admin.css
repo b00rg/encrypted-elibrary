@@ -1,0 +1,66 @@
+/* ── Admin Panel ───────────────────────────────────────────────────── */
+.admin-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px; margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(140,119,83,0.08);
+}
+
+.stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 700; color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;
+}
+
+.users-table-wrapper {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1px solid rgba(140,119,83,0.08);
+}
+
+.users-table {
+  width: 100%; border-collapse: collapse;
+}
+
+.users-table th {
+  padding: 14px 20px;
+  text-align: left; font-size: 0.78rem;
+  font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--text-muted);
+  background: var(--bg); border-bottom: 1px solid var(--accent-light);
+}
+
+.users-table td {
+  padding: 14px 20px; font-size: 0.875rem;
+  border-bottom: 1px solid rgba(140,119,83,0.06);
+  vertical-align: middle;
+}
+
+.users-table tr:last-child td { border-bottom: none; }
+
+.users-table tr:hover td { background: rgba(140,119,83,0.03); }
+
+.user-row-info {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.table-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 0.78rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.table-actions { display: flex; gap: 8px; }

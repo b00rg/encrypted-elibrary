@@ -1,0 +1,28 @@
+/* ── Search Results ─────────────────────────────────────────────────── */
+.search-section {
+  margin-bottom: 40px;
+  padding: 24px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(140,119,83,0.1);
+  animation: slideUp 0.3s ease both;
+}
+
+.search-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 600; color: var(--text);
+}
+
+.search-clear {
+  background: none; border: none;
+  font-size: 0.82rem; color: var(--text-muted);
+  cursor: pointer; transition: var(--transition); padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+.search-clear:hover { background: var(--accent-light); color: var(--accent-hover); }

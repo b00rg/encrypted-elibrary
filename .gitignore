@@ -54,3 +54,8 @@ htmlcov/
 
 src/ml_models/test.py
 data/*
+
+bookshelf.db
+
+# virtual env
+crypto-env/
