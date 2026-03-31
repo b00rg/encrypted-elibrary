@@ -98,14 +98,89 @@
 
 .card-actions {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 12px 14px;
-  background: linear-gradient(to top, rgba(250,247,240,0.98) 60%, transparent);
-  display: flex; gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(to top, rgba(250,247,240,0.98) 70%, transparent);
+  display: flex; flex-wrap: wrap; gap: 6px;
   opacity: 0; transform: translateY(4px);
   transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-.card-actions .btn { flex: 1; font-size: 0.78rem; padding: 7px 10px; }
+.card-actions .btn {
+  flex: 1 1 calc(50% - 3px);
+  min-width: calc(50% - 3px);
+  font-size: 0.74rem; padding: 6px 8px;
+}
+
+/* ── Colored book cover block ──────────────────────────────────────── */
+.book-cover-color {
+  width: 100%; aspect-ratio: 2/3; max-height: 280px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; flex-shrink: 0;
+  overflow: hidden; position: relative;
+}
+
+.book-cover-color::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.22) 100%);
+  pointer-events: none;
+}
+
+.book-cover-color .cover-initials {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem; font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: 0.05em;
+  position: relative; z-index: 1;
+}
+
+.book-cover-color .cover-book-title {
+  font-size: 0.68rem; font-style: italic;
+  color: rgba(255,255,255,0.78);
+  text-align: center; padding: 0 14px;
+  line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative; z-index: 1;
+}
+
+/* Read-Later sized variant */
+.book-cover-color.rl-cover {
+  width: 80px !important; height: 120px !important;
+  max-height: 120px !important; aspect-ratio: unset !important;
+  border-radius: 4px; gap: 6px;
+}
+
+.book-cover-color.rl-cover .cover-initials { font-size: 1.4rem; }
+.book-cover-color.rl-cover .cover-book-title { font-size: 0.6rem; -webkit-line-clamp: 2; }
+
+/* ── Shelf color accent cards ──────────────────────────────────────── */
+.shelf-color-card {
+  border-top: 3px solid var(--sc, var(--accent));
+}
+
+.shelf-color-card .book-cover-placeholder .cover-initials {
+  color: var(--sc, var(--accent-hover));
+}
+
+/* ── Shelf color dot (in filter tabs) ──────────────────────────────── */
+.shelf-color-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+  margin-right: 2px;
+}
+
+/* ── Filter tab divider ────────────────────────────────────────────── */
+.filter-tab-divider {
+  width: 1px;
+  background: var(--accent-light);
+  margin: 6px 4px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
 
 /* ── Shelf Filter Tabs ─────────────────────────────────────────────── */
 .shelf-filter-tabs {

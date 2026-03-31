@@ -1,0 +1,110 @@
+/* ── Read Later list view ───────────────────────────────────────────── */
+.rl-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-light);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.rl-controls-hint {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+
+.rl-controls-hint svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+.rl-book-list {
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+.rl-book-row {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(140,119,83,0.08);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.rl-book-header {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px 20px;
+}
+
+.rl-cover-wrap {
+  flex-shrink: 0; width: 80px;
+}
+
+.rl-cover {
+  width: 80px !important;
+  height: 120px !important;
+  max-height: 120px !important;
+  object-fit: cover;
+  border-radius: 4px;
+  aspect-ratio: unset !important;
+}
+
+.rl-cover-wrap .book-cover-placeholder {
+  width: 80px; height: 120px;
+  aspect-ratio: unset;
+  border-radius: 4px;
+}
+
+.rl-cover-wrap .book-cover-placeholder .cover-initials {
+  font-size: 1.2rem;
+}
+
+.rl-book-info {
+  flex: 1; min-width: 0;
+}
+
+.rl-row-actions {
+  display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+}
+
+.rl-reviews-section {
+  border-top: 1px solid var(--accent-light);
+  padding: 16px 20px;
+  background: rgba(250,247,240,0.5);
+}
+
+.rl-reviews-group {
+  margin-bottom: 16px;
+}
+
+.rl-reviews-group:last-child { margin-bottom: 0; }
+
+.rl-reviews-shelf-name {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--accent-hover);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.rl-reviews-shelf-name svg { width: 12px; height: 12px; }
+
+.rl-reviews-loading {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.875rem; color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.rl-reviews-loading .spinner { width: 16px; height: 16px; }
+
+.rl-reviews-empty {
+  font-size: 0.8rem; color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── count badge ────────────────────────────────────────────────────── */
+.count-badge {
+  display: inline-flex; align-items: center;
+  background: var(--accent-light);
+  color: var(--accent-hover);
+  font-size: 0.78rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 50px;
+}

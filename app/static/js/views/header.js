@@ -3,9 +3,9 @@ import { escHtml, initials } from '../utils.js';
 import { state } from '../state.js';
 import { closeModal } from './modal.js';
 import { doSearch, clearSearch } from './search.js';
-// doLogout, switchToShelf, switchToAdmin are imported from app.js.
+// doLogout, switchToShelf, switchToAdmin, switchToMyShelves are imported from app.js.
 // The circular reference is safe: these are only called inside event handlers.
-import { doLogout, switchToShelf, switchToAdmin } from '../app.js';
+import { doLogout, switchToShelf, switchToAdmin, switchToMyShelves } from '../app.js';
 
 export function renderHeader() {
   const u = state.user;
@@ -24,13 +24,20 @@ export function renderHeader() {
     </div>` : ''}
 
     <nav class="header-nav">
-      ${u?.is_admin ? `
-        <button class="nav-btn nav-btn-ghost" id="nav-shelf" title="My Shelf">
+      ${u ? `
+        <button class="nav-btn nav-btn-ghost ${state.view === 'shelf' ? 'nav-active' : ''}"
+          id="nav-shelf" title="Shared Shelf">
           ${Icons.shelf}<span>Shelf</span>
         </button>
-        <button class="nav-btn nav-btn-ghost" id="nav-admin" title="Admin Panel">
-          ${Icons.admin}<span>Admin</span>
-        </button>` : ''}
+        <button class="nav-btn nav-btn-ghost ${state.view === 'shelves' ? 'nav-active' : ''}"
+          id="nav-myshelves" title="My Shelves">
+          ${Icons.book}<span>My Shelves</span>
+        </button>
+        ${u.is_admin ? `
+          <button class="nav-btn nav-btn-ghost ${state.view === 'admin' ? 'nav-active' : ''}"
+            id="nav-admin" title="Admin Panel">
+            ${Icons.admin}<span>Admin</span>
+          </button>` : ''}` : ''}
 
       <div class="user-chip">
         <div class="user-avatar">${escHtml(initials(u?.username))}</div>
@@ -47,6 +54,7 @@ export function renderHeader() {
 export function bindHeaderEvents() {
   document.getElementById('nav-logout')?.addEventListener('click', doLogout);
   document.getElementById('nav-shelf')?.addEventListener('click', () => switchToShelf());
+  document.getElementById('nav-myshelves')?.addEventListener('click', () => switchToMyShelves());
   document.getElementById('nav-admin')?.addEventListener('click', () => switchToAdmin());
 
   const searchInput = document.getElementById('search-input');

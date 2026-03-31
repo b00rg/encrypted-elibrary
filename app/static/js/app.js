@@ -1,14 +1,17 @@
 import { state } from './state.js';
 import { api, setForceLogoutHandler } from './api.js';
 import { showToast } from './toast.js';
-import { loadShelfBooks, loadAdminUsers } from './data.js';
+import { loadShelfBooks, loadAdminUsers, loadMyShelves, loadActiveShelfBooks, loadAllBooksReviews } from './data.js';
 import { renderHeader, bindHeaderEvents } from './views/header.js';
 import { renderAuthPage, bindAuthEvents } from './views/auth.js';
-import { renderShelfPage, bindShelfEvents } from './views/shelf.js';
+import { renderShelfPage } from './views/shelf.js';
+import { bindShelfEvents } from './views/shelf-events.js';
 import { bindSearchResultEvents } from './views/search.js';
 import { renderAdminPage, bindAdminEvents } from './views/admin.js';
 import { renderPendingPage } from './views/pending.js';
 import { closeModal } from './views/modal.js';
+import { renderShelvesPage } from './views/shelves.js';
+import { bindShelvesEvents } from './views/shelves-events.js';
 
 // ── App Root ──────────────────────────────────────────────────────────
 export function renderApp() {
@@ -27,12 +30,14 @@ export function renderApp() {
         ${state.view === 'shelf'   ? renderShelfPage()   : ''}
         ${state.view === 'pending' ? renderPendingPage() : ''}
         ${state.view === 'admin'   ? renderAdminPage()   : ''}
+        ${state.view === 'shelves' ? renderShelvesPage() : ''}
       </div>
     </main>`;
 
   bindHeaderEvents();
-  if (state.view === 'shelf')  bindShelfEvents();
-  if (state.view === 'admin')  bindAdminEvents();
+  if (state.view === 'shelf')   bindShelfEvents();
+  if (state.view === 'admin')   bindAdminEvents();
+  if (state.view === 'shelves') bindShelvesEvents();
   if (state.view === 'pending') {
     document.getElementById('pending-logout')?.addEventListener('click', doLogout);
   }
@@ -50,6 +55,9 @@ export function refreshPageBody() {
   } else if (state.view === 'admin') {
     body.innerHTML = renderAdminPage();
     bindAdminEvents();
+  } else if (state.view === 'shelves') {
+    body.innerHTML = renderShelvesPage();
+    bindShelvesEvents();
   }
 }
 
@@ -57,12 +65,36 @@ export async function switchToShelf() {
   state.view = 'shelf';
   state.searchQuery = '';
   state.searchResults = [];
+  state.readLaterFilter = false;
   state.loadingShelf = true;
   renderApp();
 
-  await loadShelfBooks();
+  await Promise.all([loadShelfBooks(), loadMyShelves()]);
   state.loadingShelf = false;
   refreshPageBody();
+  loadAllBooksReviews().then(() => refreshPageBody());
+}
+
+export async function switchToMyShelves() {
+  state.view = 'shelves';
+  state.searchQuery = '';
+  state.searchResults = [];
+  renderApp();
+
+  await loadMyShelves();
+
+  // Auto-select first shelf and load its books
+  if (state.myShelves.length > 0) {
+    if (!state.activeShelfId || !state.myShelves.find(s => s.id === state.activeShelfId)) {
+      state.activeShelfId = state.myShelves[0].id;
+    }
+    state.activeShelfBooks = [];
+    state.loadingShelfBooks = true;
+    refreshPageBody();
+    await loadActiveShelfBooks();
+  }
+  refreshPageBody();
+  bindShelvesEvents();
 }
 
 export async function switchToAdmin() {
@@ -96,16 +128,20 @@ export async function loadInitialView() {
   state.loadingShelf = true;
   renderApp();
 
-  const withDetails = await Promise.all(
-    (shelfData.books || []).map(async b => {
-      if (!b.work_id) return { ...b, title: '[Encrypted]', author: '', description: '' };
-      const { ok: dok, data: detail } = await api('/shelf/book/' + encodeURIComponent(b.work_id));
-      return dok ? { ...b, ...detail } : { ...b, title: b.work_id, description: '' };
-    })
-  );
+  const [withDetails] = await Promise.all([
+    Promise.all(
+      (shelfData.books || []).map(async b => {
+        if (!b.work_id) return { ...b, title: '[Encrypted]', author: '', description: '' };
+        const { ok: dok, data: detail } = await api('/shelf/book/' + encodeURIComponent(b.work_id));
+        return dok ? { ...b, ...detail } : { ...b, title: b.work_id, description: '' };
+      })
+    ),
+    loadMyShelves(),
+  ]);
   state.shelfBooks = withDetails.reverse();
   state.loadingShelf = false;
   refreshPageBody();
+  loadAllBooksReviews().then(() => refreshPageBody());
 }
 
 export async function doLogout() {
@@ -114,6 +150,10 @@ export async function doLogout() {
   state.shelfBooks = [];
   state.searchResults = [];
   state.searchQuery = '';
+  state.myShelves = [];
+  state.activeShelfId = null;
+  state.activeShelfBooks = [];
+  state.readLaterReviews = {};
   state.view = 'auth';
   renderApp();
 }
@@ -124,6 +164,10 @@ function forceLogout() {
   state.searchResults = [];
   state.searchQuery = '';
   state.searchLoading = false;
+  state.myShelves = [];
+  state.activeShelfId = null;
+  state.activeShelfBooks = [];
+  state.readLaterReviews = {};
   state.view = 'auth';
   showToast('Your session expired. Please sign in again.', 'error');
   renderApp();

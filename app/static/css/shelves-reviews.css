@@ -1,0 +1,83 @@
+/* ── Review cards ───────────────────────────────────────────────────── */
+.review-modal { padding: 28px 32px 36px; }
+
+.review-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.review-section-title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 1rem; font-weight: 600; color: var(--text);
+}
+
+.review-section-title svg { width: 15px; height: 15px; }
+
+.no-reviews-msg {
+  font-size: 0.875rem; color: var(--text-muted);
+  font-style: italic; padding: 12px 0;
+}
+
+.review-card {
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.review-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.review-author {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.8rem; font-weight: 600; color: var(--text);
+}
+
+.review-author svg { width: 12px; height: 12px; color: var(--text-muted); }
+
+.review-date {
+  font-size: 0.73rem; color: var(--text-muted);
+}
+
+.review-text {
+  font-size: 0.875rem; color: var(--text); line-height: 1.6;
+}
+
+.review-enc-text {
+  font-size: 0.72rem;
+  font-family: 'Courier New', monospace;
+  color: var(--success);
+  background: rgba(90,138,90,0.08);
+  border: 1px solid rgba(90,138,90,0.2);
+  border-radius: 4px;
+  padding: 8px 10px;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.review-text.hidden, .review-enc-text.hidden { display: none; }
+
+.review-form { margin-top: 20px; border-top: 1px solid var(--accent-light); padding-top: 20px; }
+
+.review-form-title {
+  font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 8px;
+}
+
+.review-textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1.5px solid var(--accent-light);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem; color: var(--text);
+  resize: vertical; outline: none;
+  transition: var(--transition);
+}
+
+.review-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(140,119,83,0.12);
+}

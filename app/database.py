@@ -212,6 +212,24 @@ def get_all_books() -> list[Book]:
         return books
 
 
+def get_global_book(book_id: int) -> Book | None:
+    with SessionLocal() as session:
+        book = session.query(Book).filter_by(id=book_id).first()
+        if book:
+            session.expunge(book)
+        return book
+
+
+def delete_global_book(book_id: int) -> bool:
+    with SessionLocal() as session:
+        book = session.query(Book).filter_by(id=book_id).first()
+        if not book:
+            return False
+        session.delete(book)
+        session.commit()
+        return True
+
+
 # --- Group Shelf ---
 
 def create_shelf(name: str, owner_username: str) -> Shelf:
@@ -375,3 +393,42 @@ def get_reviews(shelf_book_id: int) -> list[Review]:
         ).all()
         session.expunge_all()
         return reviews
+
+
+def delete_shelf_book(book_id: int) -> bool:
+    with SessionLocal() as session:
+        book = session.query(ShelfBook).filter_by(id=book_id).first()
+        if not book:
+            return False
+        session.query(Review).filter_by(shelf_book_id=book_id).delete()
+        session.delete(book)
+        session.commit()
+        return True
+
+
+def get_all_reviews_with_context() -> list[dict]:
+    """Returns all reviews with shelf/book context as plain dicts (safe to use outside session)."""
+    with SessionLocal() as session:
+        results = (
+            session.query(Review, ShelfBook, Shelf)
+            .join(ShelfBook, Review.shelf_book_id == ShelfBook.id)
+            .join(Shelf, ShelfBook.shelf_id == Shelf.id)
+            .order_by(Review.created_at.asc())
+            .all()
+        )
+        output = []
+        for review, shelf_book, shelf in results:
+            output.append({
+                "review_id": review.id,
+                "shelf_book_id": review.shelf_book_id,
+                "reviewer_username": review.reviewer_username,
+                "review_enc": review.review_enc,
+                "created_at": review.created_at,
+                "shelf_id": shelf.id,
+                "shelf_name": shelf.name,
+                "shelf_owner": shelf.owner_username,
+                "work_id_enc": shelf_book.work_id_enc,
+                "book_id": shelf_book.id,
+                "added_by": shelf_book.added_by,
+            })
+        return output
