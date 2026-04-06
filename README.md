@@ -1,12 +1,12 @@
 # Secure Bookshelf
 
-A secure social bookshelf application where users can create private group shelves, share book reviews, and manage group membership — all backed by end-to-end encryption. Users outside a shelf see reviews as raw ciphertext; only group members can decrypt them.
+A secure social bookshelf application where users can create private group shelves, share book reviews, and manage group membership, all with end-to-end encryption. Users outside a shelf see reviews as raw ciphertext; only group members can decrypt them.
 
 ## Features
 
 - **Encrypted reviews**: Book reviews are encrypted with AES-256-GCM; only shelf members can read them
 - **Group shelf management**: Create shelves, invite members, or accept join requests
-- **Secure member removal**: Removing a member triggers automatic re-keying — a fresh AES key is generated and distributed to all remaining members
+- **Secure member removal**: Removing a member triggers automatic re-keying. A fresh AES key is generated and distributed to all remaining members
 - **Public-key certificate system**: Each user gets an RSA-2048 keypair and an X.509 certificate on registration
 - **Admin global shelf**: The first registered user becomes admin and manages a global shared shelf
 
@@ -43,7 +43,7 @@ User password
 1. Member deleted from `ShelfMembership`
 2. A **new** AES key is generated
 3. New key is wrapped with each remaining member's public key and stored
-4. `key_version` incremented — all future content uses the new key
+4. `key_version` incremented. All future content uses the new key
 
 ## Setup
 
@@ -77,12 +77,12 @@ The app runs at `http://localhost:5001`.
 
 ## Usage
 
-1. **Register** — creates your RSA keypair, X.509 certificate, and (if you're the first user) the global shelf
-2. **Login** — password decrypts your private key, which unwraps all your shelf AES keys into the session
-3. **Create a shelf** — generates a new AES key for that shelf
-4. **Invite a user** — their public key (from their cert) wraps a copy of the shelf key for them
-5. **Write a review** — encrypted with the shelf AES key before being stored
-6. **Non-members** — see the raw base64 ciphertext when viewing reviews
+1. **Register**: creates your RSA keypair, X.509 certificate, and (if you're the first user) the global shelf
+2. **Login**: password decrypts your private key, which unwraps all your shelf AES keys into the session
+3. **Create a shelf**: generates a new AES key for that shelf
+4. **Invite a user**: their public key (from their cert) wraps a copy of the shelf key for them
+5. **Write a review**: encrypted with the shelf AES key before being stored
+6. **Non-members**: see the raw base64 ciphertext when viewing reviews
 
 ## Project Structure
 
@@ -103,6 +103,6 @@ app/
 
 ## Known Limitations
 
-- **Self-signed certificates**: There is no root CA — certificates are self-signed. A production system would use a proper certificate authority.
+- **Self-signed certificates**: There is no root CA; certificates are self-signed. A production system would use a proper certificate authority.
 - **Historical ciphertext**: Re-keying on member removal protects future content. Old ciphertext encrypted under the previous key remains in the database (re-encryption of historical data is not performed).
 - **Session-held keys**: Decrypted AES keys live in the server-side Flask session for the duration of the login session.
