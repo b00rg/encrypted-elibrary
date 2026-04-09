@@ -13,13 +13,6 @@ from .helpers import _auth_required, _shelf_key
 
 @api.route("/reviews/for-work")
 def reviews_for_work():
-    """Return reviews for a book across all shelves.
-
-    - Shelves the user is a member of: reviews are decrypted.
-    - Shelves the user is NOT a member of: reviews are returned as encrypted
-      ciphertext (review=None, encrypted=True) so the frontend can display
-      them as locked.
-    """
     err = _auth_required()
     if err:
         return err
@@ -31,16 +24,13 @@ def reviews_for_work():
     username = session["username"]
     work_id_hash = hashlib.sha256(work_id.encode()).hexdigest()
 
-    # Build a set of shelf IDs the current user is a member of
     member_shelf_ids = {m.shelf_id for m in get_user_shelf_memberships(username)}
 
     results = []
     seen_book_ids: set[int] = set()
 
-    # Use hash-based lookup when available (fast path)
     hash_books = get_shelf_books_by_hash(work_id_hash)
 
-    # Also check member shelves via decryption for books added before hash column existed
     member_books_by_shelf: dict[int, list] = {}
     for m_shelf_id in member_shelf_ids:
         aes_key = _shelf_key(m_shelf_id)
@@ -50,12 +40,11 @@ def reviews_for_work():
             if b.id in seen_book_ids:
                 continue
             if b.work_id_hash == work_id_hash:
-                continue  # already covered by hash_books
+                continue  
             if not is_encrypted(b.work_id_enc):
                 continue
             try:
                 if decrypt_message(b.work_id_enc, aes_key) == work_id:
-                    # Lazily backfill the hash so non-members can discover this book
                     if not b.work_id_hash:
                         set_shelf_book_hash(b.id, work_id_hash)
                         b.work_id_hash = work_id_hash
@@ -95,7 +84,6 @@ def reviews_for_work():
                     "created_at": r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "",
                 })
             else:
-                # User is not a member — show encrypted ciphertext only, hide individual rating
                 shelf_reviews.append({
                     "id": r.id,
                     "reviewer_username": r.reviewer_username,
@@ -106,7 +94,6 @@ def reviews_for_work():
                     "created_at": r.created_at.strftime("%Y-%m-%d %H:%M") if r.created_at else "",
                 })
 
-        # Compute average rating across all reviews (plaintext column, visible to anyone as aggregate)
         all_ratings = [r.rating for r in db_reviews if r.rating is not None]
         avg_rating = round(sum(all_ratings) / len(all_ratings), 1) if all_ratings else None
 

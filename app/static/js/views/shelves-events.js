@@ -11,7 +11,6 @@ import { toggleReadLater } from '../readLater.js';
 import { openLibraryUrl } from '../utils.js';
 
 export function bindShelvesEvents() {
-  // Find a Shelf button — opens popup
   document.getElementById('find-shelf-btn')?.addEventListener('click', () => {
     const popup = document.getElementById('find-shelf-popup');
     if (popup) {
@@ -20,13 +19,11 @@ export function bindShelvesEvents() {
     }
   });
 
-  // Close popup
   document.getElementById('find-shelf-popup-close')?.addEventListener('click', closeDiscoverPopup);
   document.getElementById('find-shelf-popup')?.addEventListener('click', e => {
     if (e.target === e.currentTarget) closeDiscoverPopup();
   });
 
-  // Discover search input inside popup
   const discoverInput = document.getElementById('discover-input');
   if (discoverInput) {
     let debounce;
@@ -43,7 +40,6 @@ export function bindShelvesEvents() {
     });
   }
 
-  // Request to join / cancel request (in discover results)
   document.querySelectorAll('.request-join-btn').forEach(btn => {
     btn.addEventListener('click', () => doJoinRequest(
       parseInt(btn.dataset.shelfId, 10), btn.dataset.shelfName
@@ -55,7 +51,6 @@ export function bindShelvesEvents() {
     ));
   });
 
-  // Invitation accept / decline
   document.querySelectorAll('.accept-invite-btn').forEach(btn => {
     btn.addEventListener('click', () => doAcceptInvitation(
       parseInt(btn.dataset.invId, 10), btn.dataset.shelfName
@@ -67,7 +62,6 @@ export function bindShelvesEvents() {
     ));
   });
 
-  // Create shelf toggle
   document.getElementById('create-shelf-btn')?.addEventListener('click', () => {
     document.getElementById('create-shelf-form').classList.remove('hidden');
     document.getElementById('new-shelf-name').focus();
@@ -81,7 +75,7 @@ export function bindShelvesEvents() {
     if (e.key === 'Enter') doCreateShelf();
   });
 
-  // All Books tab
+
   document.getElementById('tab-all-books')?.addEventListener('click', async () => {
     state.shelvesTab = 'all';
     if (state.allShelvesBooks.length === 0 && !state.loadingAllBooks) {
@@ -94,7 +88,7 @@ export function bindShelvesEvents() {
     bindShelvesEvents();
   });
 
-  // Read Later tab
+
   document.getElementById('tab-read-later')?.addEventListener('click', async () => {
     state.shelvesTab = 'readLater';
     if (state.allShelvesBooks.length === 0 && !state.loadingAllBooks) {
@@ -107,7 +101,7 @@ export function bindShelvesEvents() {
     bindShelvesEvents();
   });
 
-  // Shelf tabs
+
   document.querySelectorAll('[data-tab-shelf-id]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = parseInt(btn.dataset.tabShelfId, 10);
@@ -122,7 +116,7 @@ export function bindShelvesEvents() {
     });
   });
 
-  // Settings gear toggle
+
   document.getElementById('shelf-settings-btn')?.addEventListener('click', e => {
     e.stopPropagation();
     document.getElementById('shelf-settings-dropdown')?.classList.toggle('hidden');
@@ -131,7 +125,7 @@ export function bindShelvesEvents() {
     document.getElementById('shelf-settings-dropdown')?.classList.add('hidden');
   }, { once: true });
 
-  // Members button (inside settings dropdown)
+
   document.getElementById('manage-members-btn')?.addEventListener('click', () => {
     document.getElementById('shelf-settings-dropdown')?.classList.add('hidden');
     const shelfId = parseInt(
@@ -140,7 +134,7 @@ export function bindShelvesEvents() {
     openMembersPanel(shelfId);
   });
 
-  // Delete shelf (inside settings dropdown)
+
   document.getElementById('delete-shelf-btn')?.addEventListener('click', () => {
     document.getElementById('shelf-settings-dropdown')?.classList.add('hidden');
     const btn = document.getElementById('delete-shelf-btn');
@@ -149,7 +143,7 @@ export function bindShelvesEvents() {
     doDeleteShelf(shelfId, shelfName);
   });
 
-  // Add to Shelf popup from Read Later cards
+
   document.querySelectorAll('.group-add-shelf-popup-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -163,7 +157,7 @@ export function bindShelvesEvents() {
     });
   });
 
-  // Book grid: reviews, rl, link, delete
+
   const grid = document.getElementById('group-shelf-grid');
   if (grid) {
     grid.addEventListener('click', e => {
@@ -196,7 +190,7 @@ export function bindShelvesEvents() {
       if (rlBtn) {
         e.stopPropagation();
         const workId = rlBtn.dataset.workId;
-        // Find the book in state so we can persist metadata for the Read Later panel
+
         const book = [...state.activeShelfBooks, ...state.allShelvesBooks]
           .find(b => b.work_id === workId);
         const meta = book ? {

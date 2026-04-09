@@ -6,18 +6,13 @@ export function getReadLater() {
   catch { return new Set(); }
 }
 
-/** Returns a map of work_id → {title, author, cover_id, year} for bookmarked books. */
+
 export function getReadLaterMeta() {
   try { return JSON.parse(localStorage.getItem(RL_META_KEY) || '{}'); }
   catch { return {}; }
 }
 
-/**
- * Toggle a book in/out of Read Later.
- * @param {string} workId
- * @param {{title?, author?, cover_id?, year?}} [meta] - optional metadata to save alongside
- * @returns {boolean} true if now saved, false if removed
- */
+
 export function toggleReadLater(workId, meta = null) {
   const set = getReadLater();
   const metaMap = getReadLaterMeta();

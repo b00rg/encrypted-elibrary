@@ -4,16 +4,14 @@ import { state } from '../state.js';
 import { api } from '../api.js';
 import { showToast } from '../toast.js';
 import { loadAdminUsers } from '../data.js';
-// refreshPageBody and switchToShelf are imported from app.js.
-// The circular reference is safe: only called inside event handlers.
+
 import { refreshPageBody, switchToShelf } from '../app.js';
 
 export function renderAdminPage() {
   const allUsers = state.adminUsers;
-  const members = allUsers.filter(u => u.is_member).length;
+  const withAccess = allUsers.filter(u => (u.shelves || []).length > 0).length;
   const ownedShelves = (state.myShelves || []).filter(s => s.is_owner);
 
-  // Filter users based on search query
   const q = state.adminSearchQuery || '';
   const users = q
     ? allUsers.filter(u => u.username.toLowerCase().includes(q.toLowerCase()))
@@ -37,12 +35,12 @@ export function renderAdminPage() {
         <div class="stat-label">Total Users</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${members}</div>
-        <div class="stat-label">Global Shelf Members</div>
+        <div class="stat-value">${withAccess}</div>
+        <div class="stat-label">With Shelf Access</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${allUsers.length - members}</div>
-        <div class="stat-label">Not Yet Added</div>
+        <div class="stat-value">${allUsers.length - withAccess}</div>
+        <div class="stat-label">No Shelf Access</div>
       </div>
     </div>
 
@@ -58,7 +56,7 @@ export function renderAdminPage() {
         <thead>
           <tr>
             <th>User</th>
-            <th>Status</th>
+            <th>Shelves</th>
             <th>Role</th>
             <th>Actions</th>
           </tr>
@@ -77,6 +75,13 @@ export function renderAdminPage() {
 
 function renderUserRow(u, ownedShelves) {
   const isSelf = u.username === state.user?.username;
+  const memberShelfIds = new Set((u.shelves || []).map(s => s.id));
+  const addableShelves = ownedShelves.filter(s => !memberShelfIds.has(s.id));
+
+  const shelfBadges = (u.shelves || []).length > 0
+    ? (u.shelves || []).map(s => `<span class="badge badge-member">${escHtml(s.name)}</span>`).join(' ')
+    : `<span class="badge badge-pending">${Icons.clock} None</span>`;
+
   return `
   <tr data-username="${escHtml(u.username)}">
     <td>
@@ -85,31 +90,22 @@ function renderUserRow(u, ownedShelves) {
         <strong>${escHtml(u.username)}</strong>${isSelf ? ' <span style="font-size:0.75rem;color:var(--text-muted)">(you)</span>' : ''}
       </div>
     </td>
-    <td>
-      ${u.is_member
-        ? `<span class="badge badge-member">${Icons.check} Member</span>`
-        : `<span class="badge badge-pending">${Icons.clock} Pending</span>`}
-    </td>
+    <td>${shelfBadges}</td>
     <td>
       ${u.is_admin ? `<span class="badge badge-admin">${Icons.admin} Admin</span>` : '<span style="color:var(--text-muted);font-size:0.8rem">User</span>'}
     </td>
     <td>
       <div class="table-actions">
-        ${!u.is_member && !isSelf ? `
+        ${!isSelf && addableShelves.length > 0 ? `
           <div class="admin-add-row">
             <select class="admin-shelf-select" id="shelf-select-${escHtml(u.username)}" data-username="${escHtml(u.username)}">
-              <option value="global">Global Shelf</option>
-              ${ownedShelves.map(s => `
-                <option value="shelf-${s.id}">${escHtml(s.name)}</option>`).join('')}
+              ${addableShelves.map(s => `
+                <option value="${s.id}">${escHtml(s.name)}</option>`).join('')}
             </select>
             <button class="btn btn-outline btn-sm admin-add-btn" data-username="${escHtml(u.username)}">
               ${Icons.plus} Add
             </button>
           </div>` : ''}
-        ${u.is_member && !isSelf ? `
-          <button class="btn btn-danger btn-sm admin-remove-btn" data-username="${escHtml(u.username)}">
-            ${Icons.trash} Remove from Global
-          </button>` : ''}
         ${isSelf ? '<span style="color:var(--text-muted);font-size:0.8rem">—</span>' : ''}
       </div>
     </td>
@@ -119,7 +115,6 @@ function renderUserRow(u, ownedShelves) {
 export function bindAdminEvents() {
   document.getElementById('back-to-shelf')?.addEventListener('click', () => switchToShelf());
 
-  // Username search filter
   const searchInput = document.getElementById('admin-search-input');
   if (searchInput) {
     let debounce;
@@ -137,25 +132,18 @@ export function bindAdminEvents() {
     btn.addEventListener('click', async () => {
       const username = btn.dataset.username;
       const select = document.getElementById(`shelf-select-${username}`);
-      const shelfValue = select?.value || 'global';
+      const shelfId = select?.value;
+      if (!shelfId) return;
 
       btn.disabled = true;
       btn.innerHTML = `<div class="spinner spinner-dark"></div>`;
 
-      let ok, data;
-      if (shelfValue === 'global') {
-        ({ ok, data } = await api('/admin/add', {
-          method: 'POST', body: JSON.stringify({ username }),
-        }));
-      } else {
-        const shelfId = shelfValue.replace('shelf-', '');
-        ({ ok, data } = await api(`/shelves/${shelfId}/members`, {
-          method: 'POST', body: JSON.stringify({ username }),
-        }));
-      }
+      const { ok, data } = await api(`/shelves/${shelfId}/members`, {
+        method: 'POST', body: JSON.stringify({ username }),
+      });
 
       if (ok) {
-        const shelfName = shelfValue === 'global' ? 'global shelf' : select?.options[select.selectedIndex]?.text;
+        const shelfName = select?.options[select.selectedIndex]?.text || `shelf ${shelfId}`;
         showToast(`${username} added to ${shelfName}.`, 'success');
         await loadAdminUsers();
         refreshPageBody();
@@ -164,28 +152,6 @@ export function bindAdminEvents() {
         showToast(data.error || 'Failed to add user.', 'error');
         btn.disabled = false;
         btn.innerHTML = `${Icons.plus} Add`;
-      }
-    });
-  });
-
-  document.querySelectorAll('.admin-remove-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const username = btn.dataset.username;
-      if (!confirm(`Remove "${username}" from the global shelf? Their access will be revoked and the shelf will be re-keyed.`)) return;
-      btn.disabled = true;
-      btn.innerHTML = `<div class="spinner"></div>`;
-      const { ok, data } = await api('/admin/remove', {
-        method: 'POST', body: JSON.stringify({ username }),
-      });
-      if (ok) {
-        showToast(`${username} removed and shelf re-keyed.`, 'success');
-        await loadAdminUsers();
-        refreshPageBody();
-        bindAdminEvents();
-      } else {
-        showToast(data.error || 'Failed to remove user.', 'error');
-        btn.disabled = false;
-        btn.innerHTML = `${Icons.trash} Remove from Global`;
       }
     });
   });

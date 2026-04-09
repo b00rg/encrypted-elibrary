@@ -23,7 +23,6 @@ export function bindShelfEvents() {
     bindShelfEvents();
   });
 
-  // Shelf nav tabs → navigate to that shelf
   document.querySelectorAll('.shelf-nav-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = parseInt(btn.dataset.shelfNavId, 10);
@@ -50,7 +49,6 @@ export function bindShelfEvents() {
       const nowSaved = toggleReadLater(workId);
       showToast(nowSaved ? 'Added to Read Later.' : 'Removed from Read Later.', 'success');
       if (!nowSaved && state.readLaterFilter) {
-        // Remove from cached reviews only if needed to keep filter clean
         const newReviews = { ...state.readLaterReviews };
         delete newReviews[workId];
         state.readLaterReviews = newReviews;

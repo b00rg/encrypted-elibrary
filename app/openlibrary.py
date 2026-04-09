@@ -4,8 +4,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 
 API_BASE = "https://openlibrary.org"
-TIMEOUT = 5  # seconds per request
-CACHE_TTL = 3600  # 1 hour
+TIMEOUT = 5  
+CACHE_TTL = 3600 
 
 _book_cache: dict[str, tuple[dict | None, float]] = {}
 
@@ -35,9 +35,6 @@ def search_books(query: str, limit: int = 10) -> list[dict]:
 
 
 def _fetch_book(work_id: str) -> dict | None:
-    """Fetch book details from OpenLibrary. Tries search API first (gives author+year),
-    falls back to works API."""
-    # Try search API — returns author_name and first_publish_year
     try:
         resp = requests.get(
             f"{API_BASE}/search.json",
@@ -63,7 +60,6 @@ def _fetch_book(work_id: str) -> dict | None:
     except requests.RequestException:
         pass
 
-    # Fallback: works API (no author/year)
     try:
         resp = requests.get(f"{API_BASE}/works/{work_id}.json", timeout=TIMEOUT)
         if resp.status_code == 200:
@@ -88,7 +84,6 @@ def _fetch_book(work_id: str) -> dict | None:
 
 
 def get_book(work_id: str) -> dict | None:
-    """Get a single book's details, using cache."""
     now = time.time()
     if work_id in _book_cache:
         result, ts = _book_cache[work_id]
@@ -100,8 +95,6 @@ def get_book(work_id: str) -> dict | None:
 
 
 def get_books_batch(work_ids: list[str]) -> dict[str, dict]:
-    """Fetch multiple books in parallel, returning a dict of work_id → metadata.
-    Uses the in-memory cache to avoid redundant network calls."""
     result: dict[str, dict] = {}
     to_fetch: list[str] = []
     now = time.time()

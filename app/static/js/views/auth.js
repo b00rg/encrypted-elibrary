@@ -1,9 +1,6 @@
 import { Icons } from '../icons.js';
-import { escHtml } from '../utils.js';
 import { api } from '../api.js';
 import { showToast } from '../toast.js';
-// loadInitialView is imported from app.js; the circular reference is safe because
-// this import is only used inside event handler callbacks (not at module init time).
 import { loadInitialView } from '../app.js';
 
 export function renderAuthPage() {

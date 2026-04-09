@@ -35,7 +35,6 @@ export function renderCoverImg(url, title, extraClass = '') {
   </div>`;
 }
 
-// Colour for books on the original shared shelf (not a group shelf)
 export const SHARED_SHELF_COLOR = '#6b5a45';
 
 export function renderColorCover(title, color, extraClass = '', author = '') {
@@ -46,14 +45,14 @@ export function renderColorCover(title, color, extraClass = '', author = '') {
 }
 
 export const SHELF_COLORS = [
-  '#5a8a7a', // teal
-  '#7a5a8a', // purple
-  '#b07040', // terracotta
-  '#5a6a8a', // slate blue
-  '#7a8a5a', // sage green
-  '#8a5a5a', // dusty rose
-  '#6a7a5a', // moss
-  '#8a7a40', // warm amber
+  '#5a8a7a', 
+  '#7a5a8a', 
+  '#b07040', 
+  '#5a6a8a', 
+  '#7a8a5a', 
+  '#8a5a5a', 
+  '#6a7a5a',
+  '#8a7a40', 
 ];
 
 export function renderSkeletonCards(n = 8) {

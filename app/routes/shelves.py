@@ -87,7 +87,6 @@ def list_shelf_books(shelf_id: int):
     work_ids = []
     for b in books:
         work_id = decrypt_message(b.work_id_enc, aes_key) if is_encrypted(b.work_id_enc) else None
-        # Lazily backfill work_id_hash for books added before the column existed
         if work_id and not b.work_id_hash:
             set_shelf_book_hash(b.id, hashlib.sha256(work_id.encode()).hexdigest())
         entry = {
@@ -100,7 +99,6 @@ def list_shelf_books(shelf_id: int):
         if work_id:
             work_ids.append(work_id)
 
-    # Fetch book metadata from OpenLibrary in parallel and embed in response
     if work_ids:
         meta = get_books_batch(work_ids)
         for entry in result:

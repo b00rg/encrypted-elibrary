@@ -22,7 +22,6 @@ def list_shelf_members(shelf_id: int):
     if not shelf:
         return jsonify({"error": "Shelf not found"}), 404
 
-    # Any shelf member (not just the owner) can view the member list
     username = session["username"]
     if shelf.owner_username != username and not _shelf_key(shelf_id):
         return jsonify({"error": "Not a member of this shelf"}), 403

@@ -35,7 +35,6 @@ def has_pending_access(shelf_id: int, target_username: str) -> bool:
 
 
 def get_shelf_join_requests(shelf_id: int) -> list[ShelfAccessRequest]:
-    """Join requests (user-initiated) for a shelf."""
     with SessionLocal() as session:
         reqs = session.query(ShelfAccessRequest).filter_by(
             shelf_id=shelf_id, request_type="request"
@@ -45,7 +44,6 @@ def get_shelf_join_requests(shelf_id: int) -> list[ShelfAccessRequest]:
 
 
 def get_shelf_invitations(shelf_id: int) -> list[ShelfAccessRequest]:
-    """Invitations (owner-initiated) for a shelf."""
     with SessionLocal() as session:
         reqs = session.query(ShelfAccessRequest).filter_by(
             shelf_id=shelf_id, request_type="invite"
@@ -55,7 +53,6 @@ def get_shelf_invitations(shelf_id: int) -> list[ShelfAccessRequest]:
 
 
 def get_user_pending_invitations(username: str) -> list[dict]:
-    """Returns invitations pending for a user, enriched with shelf info."""
     with SessionLocal() as session:
         rows = (
             session.query(ShelfAccessRequest, Shelf)
@@ -80,7 +77,6 @@ def get_user_pending_invitations(username: str) -> list[dict]:
 
 
 def get_user_pending_requests(username: str) -> list[int]:
-    """Shelf IDs where user has a pending join request."""
     with SessionLocal() as session:
         reqs = session.query(ShelfAccessRequest).filter_by(
             target_username=username, request_type="request"
@@ -89,7 +85,6 @@ def get_user_pending_requests(username: str) -> list[int]:
 
 
 def get_user_pending_requests_detailed(username: str) -> list[dict]:
-    """Join requests user has sent, with shelf details."""
     with SessionLocal() as session:
         rows = (
             session.query(ShelfAccessRequest, Shelf)

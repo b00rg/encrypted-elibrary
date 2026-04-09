@@ -3,8 +3,6 @@ import { escHtml, initials } from '../utils.js';
 import { state } from '../state.js';
 import { closeModal } from './modal.js';
 import { doSearch, clearSearch } from './search.js';
-// doLogout, switchToAdmin, switchToMyShelves, switchToAccess are imported from app.js.
-// The circular reference is safe: these are only called inside event handlers.
 import { doLogout, switchToAdmin, switchToMyShelves, switchToAccess } from '../app.js';
 
 export function renderHeader() {

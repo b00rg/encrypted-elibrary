@@ -37,7 +37,7 @@ class Book(Base):
     __tablename__ = "books"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    work_id_enc = Column(Text, nullable=False)  # AES-GCM encrypted OpenLibrary work ID
+    work_id_enc = Column(Text, nullable=False) 
     added_by = Column(String(64), nullable=False)
     created_at = Column(DateTime, default=datetime.now)
 
@@ -78,7 +78,7 @@ class ShelfBook(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     shelf_id = Column(Integer, nullable=False)
     work_id_enc = Column(Text, nullable=False)
-    work_id_hash = Column(String(64), nullable=True)  # SHA-256 of plaintext work_id for cross-shelf lookup
+    work_id_hash = Column(String(64), nullable=True)  
     added_by = Column(String(64), nullable=False)
     created_at = Column(DateTime, default=datetime.now)
 
@@ -87,15 +87,14 @@ class ShelfBook(Base):
 
 
 class ShelfAccessRequest(Base):
-    """Pending join requests (user-initiated) or invitations (owner-initiated)."""
     __tablename__ = "shelf_access_requests"
     __table_args__ = (UniqueConstraint("shelf_id", "target_username"),)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     shelf_id = Column(Integer, nullable=False)
     target_username = Column(String(64), nullable=False)
-    request_type = Column(String(16), nullable=False)  # 'invite' | 'request'
-    wrapped_key = Column(LargeBinary, nullable=True)   # pre-wrapped for invites
+    request_type = Column(String(16), nullable=False) 
+    wrapped_key = Column(LargeBinary, nullable=True)   
     created_at = Column(DateTime, default=datetime.now)
 
     def __repr__(self):
@@ -118,16 +117,15 @@ class Review(Base):
 
 def init_db():
     Base.metadata.create_all(bind=engine)
-    # Add work_id_hash column if missing (migration for existing databases)
     with engine.connect() as conn:
         from sqlalchemy import text
         try:
             conn.execute(text("ALTER TABLE shelf_books ADD COLUMN work_id_hash VARCHAR(64)"))
             conn.commit()
         except Exception:
-            pass  # Column already exists
+            pass
         try:
             conn.execute(text("ALTER TABLE reviews ADD COLUMN rating INTEGER"))
             conn.commit()
         except Exception:
-            pass  # Column already exists
+            pass 

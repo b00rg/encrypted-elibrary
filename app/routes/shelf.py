@@ -1,16 +1,10 @@
-import binascii
-
 from flask import jsonify, request, session
 
 from app.routes import api
 from app.crypto import decrypt_message, encrypt_message, generate_aes_key, is_encrypted
 from app.database import (
-    add_book, delete_global_book, delete_user, get_all_books, get_all_member_certificates,
-    get_all_users, get_current_key_version, get_global_book, get_user, get_wrapped_key,
-    save_wrapped_key,
-)
-from app.key_management import (
-    add_member, deserialize_certificate, get_username_from_cert, remove_member,
+    add_book, delete_global_book, get_all_books, get_all_users, get_global_book,
+    get_owned_shelves, get_shelf_members,
 )
 from app.openlibrary import get_book, get_books_batch, search_books
 from .helpers import _aes_key, _auth_required
@@ -119,55 +113,23 @@ def admin():
     if not session.get("is_admin"):
         return jsonify({"error": "Unauthorized"}), 403
 
-    members = {
-        get_username_from_cert(deserialize_certificate(cert_pem))
-        for cert_pem in get_all_member_certificates()
-    }
+    admin_username = session["username"]
+    owned_shelves = get_owned_shelves(admin_username)
+
+    user_shelf_map: dict[str, list] = {}
+    for shelf in owned_shelves:
+        for m in get_shelf_members(shelf.id):
+            user_shelf_map.setdefault(m.username, []).append(
+                {"id": shelf.id, "name": shelf.name}
+            )
+
     return jsonify({
         "users": [
-            {"username": u.username, "is_member": u.username in members, "is_admin": u.is_admin}
+            {
+                "username": u.username,
+                "is_admin": u.is_admin,
+                "shelves": user_shelf_map.get(u.username, []),
+            }
             for u in get_all_users()
         ]
     })
-
-
-@api.route("/admin/add", methods=["POST"])
-def admin_add():
-    if not session.get("is_admin"):
-        return jsonify({"error": "Unauthorized"}), 403
-
-    aes_key = _aes_key()
-    if not aes_key:
-        return jsonify({"error": "No group key in session"}), 400
-
-    target = (request.get_json() or {}).get("username", "").strip()
-    user = get_user(target)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    if get_wrapped_key(target):
-        return jsonify({"error": "Already a member"}), 400
-
-    save_wrapped_key(target, add_member(aes_key, user.certificate))
-    return jsonify({"message": f"{target} added to shelf"})
-
-
-@api.route("/admin/remove", methods=["POST"])
-def admin_remove():
-    if not session.get("is_admin"):
-        return jsonify({"error": "Unauthorized"}), 403
-
-    target = (request.get_json() or {}).get("username", "").strip()
-    if target == session["username"]:
-        return jsonify({"error": "Cannot remove yourself"}), 400
-    if not delete_user(target):
-        return jsonify({"error": "User not found"}), 404
-
-    remaining = get_all_member_certificates()
-    if remaining:
-        new_key, wrapped_keys = remove_member(remaining)
-        version = get_current_key_version(session["username"]) + 1
-        for uname, wkey in wrapped_keys.items():
-            save_wrapped_key(uname, wkey, version=version)
-        session["aes_key_hex"] = binascii.hexlify(new_key).decode()
-
-    return jsonify({"message": f"{target} removed and shelf re-keyed"})

@@ -70,7 +70,6 @@ def get_shelf_members(shelf_id: int) -> list[ShelfMembership]:
 
 
 def get_shelf_member_certificates(shelf_id: int) -> list[tuple[str, bytes]]:
-    """Returns list of (username, certificate_pem) for all shelf members."""
     with SessionLocal() as session:
         members = session.query(ShelfMembership).filter_by(shelf_id=shelf_id).all()
         result = []
@@ -104,6 +103,13 @@ def update_shelf_keys(shelf_id: int, wrapped_keys: dict, version: int):
                 m.key_version = version
                 m.updated_at = datetime.now()
         session.commit()
+
+
+def get_owned_shelves(username: str) -> list[Shelf]:
+    with SessionLocal() as session:
+        shelves = session.query(Shelf).filter_by(owner_username=username).all()
+        session.expunge_all()
+        return shelves
 
 
 def get_user_shelf_memberships(username: str) -> list[ShelfMembership]:

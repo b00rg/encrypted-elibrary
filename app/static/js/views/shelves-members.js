@@ -20,7 +20,6 @@ export async function openMembersPanel(shelfId) {
   const members = membersRes.data.members || [];
   const isOwner = membersRes.data.is_owner === true;
 
-  // Only owners fetch join-requests and invitations
   let requests = [];
   let invites = [];
   if (isOwner) {
@@ -96,14 +95,12 @@ export async function openMembersPanel(shelfId) {
     </button>
   </div>` : ''}`;
 
-  // Bind close
   document.getElementById('close-members-btn')?.addEventListener('click', () => {
     panel.classList.add('hidden');
   });
 
   if (!isOwner) return;
 
-  // Invite new member
   document.getElementById('add-member-btn')?.addEventListener('click', async () => {
     const username = document.getElementById('add-member-input')?.value.trim();
     if (!username) return;
@@ -119,7 +116,6 @@ export async function openMembersPanel(shelfId) {
     }
   });
 
-  // Approve join request
   panel.querySelectorAll('.approve-request-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const { ok, data } = await api(
@@ -135,7 +131,6 @@ export async function openMembersPanel(shelfId) {
     });
   });
 
-  // Reject join request
   panel.querySelectorAll('.reject-request-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (!confirm(`Reject ${btn.dataset.username}'s request?`)) return;
@@ -152,7 +147,6 @@ export async function openMembersPanel(shelfId) {
     });
   });
 
-  // Cancel pending invitation
   panel.querySelectorAll('.cancel-invite-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (!confirm(`Cancel invitation for ${btn.dataset.username}?`)) return;
@@ -169,7 +163,6 @@ export async function openMembersPanel(shelfId) {
     });
   });
 
-  // Remove existing member
   panel.querySelectorAll('.remove-member-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const username = btn.dataset.username;

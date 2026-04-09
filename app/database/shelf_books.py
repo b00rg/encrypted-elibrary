@@ -22,7 +22,6 @@ def get_shelf_books(shelf_id: int) -> list[ShelfBook]:
 
 
 def get_shelf_books_by_hash(work_id_hash: str) -> list[ShelfBook]:
-    """Return all ShelfBook rows whose work_id_hash matches (across all shelves)."""
     with SessionLocal() as session:
         books = session.query(ShelfBook).filter_by(work_id_hash=work_id_hash).all()
         session.expunge_all()
@@ -38,7 +37,6 @@ def get_shelf_book(book_id: int) -> ShelfBook | None:
 
 
 def set_shelf_book_hash(book_id: int, work_id_hash: str) -> None:
-    """Lazily backfill work_id_hash for books added before the column existed."""
     with SessionLocal() as session:
         book = session.query(ShelfBook).filter_by(id=book_id).first()
         if book and not book.work_id_hash:
@@ -58,7 +56,6 @@ def delete_shelf_book(book_id: int) -> bool:
 
 
 def search_shelves(query: str, exclude_username: str) -> list[dict]:
-    """Search shelves by name, excluding ones the user is already a member of."""
     with SessionLocal() as session:
         member_shelf_ids = [
             m.shelf_id for m in

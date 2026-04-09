@@ -1,7 +1,6 @@
 import { state } from './state.js';
 import { showToast } from './toast.js';
 
-// Registered by app.js to avoid a circular import at init time.
 let _onForceLogout = () => {};
 export function setForceLogoutHandler(fn) { _onForceLogout = fn; }
 

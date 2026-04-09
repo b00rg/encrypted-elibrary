@@ -1,10 +1,3 @@
-/**
- * "Add to Shelf" popup — shown when clicking a book from search or Read Later.
- * Displays:
- *   1. Book title/author
- *   2. Shelf picker (your shelves as buttons)
- *   3. First 3 reviews across all shelves for this book
- */
 import { Icons } from '../icons.js';
 import { escHtml, coverUrl } from '../utils.js';
 import { state } from '../state.js';
@@ -48,7 +41,6 @@ export async function openAddToShelfPopup({ workId, title, author, coverId, year
 
   overlay.classList.remove('hidden');
 
-  // Bind shelf buttons
   content.querySelectorAll('.asp-shelf-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const shelfId   = parseInt(btn.dataset.shelfId, 10);
@@ -76,7 +68,6 @@ export async function openAddToShelfPopup({ workId, title, author, coverId, year
     });
   });
 
-  // Load reviews
   const { ok, data } = await api(`/reviews/for-work?work_id=${encodeURIComponent(workId)}`);
   document.getElementById('asp-reviews-loading')?.remove();
   const container = document.getElementById('asp-reviews-container');

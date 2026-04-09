@@ -27,7 +27,6 @@ def get_reviews(shelf_book_id: int) -> list[Review]:
 
 
 def get_all_reviews_with_context() -> list[dict]:
-    """Returns all reviews with shelf/book context as plain dicts (safe to use outside session)."""
     with SessionLocal() as session:
         results = (
             session.query(Review, ShelfBook, Shelf)

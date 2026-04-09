@@ -13,7 +13,6 @@ from app.key_management import (
     deserialize_private_key, generate_certificate, generate_rsa_keypair,
     serialize_certificate, serialize_private_key, unwrap_group_key, wrap_group_key,
 )
-from .helpers import _auth_required
 
 
 @api.route("/me")

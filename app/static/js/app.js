@@ -14,7 +14,6 @@ import { renderShelvesPage } from './views/shelves.js';
 import { bindShelvesEvents } from './views/shelves-events.js';
 import { renderPendingAccessPage, bindPendingAccessEvents } from './views/pending-access.js';
 
-// ── App Root ──────────────────────────────────────────────────────────
 export function renderApp() {
   const app = document.getElementById('app');
 
@@ -46,7 +45,7 @@ export function renderApp() {
   }
 }
 
-// ── Navigation ────────────────────────────────────────────────────────
+
 export function refreshPageBody() {
   const body = document.getElementById('page-body');
   if (!body) return;
@@ -60,8 +59,7 @@ export function refreshPageBody() {
     bindAdminEvents();
   } else if (state.view === 'shelves') {
     body.innerHTML = (state.searchQuery ? renderSearchResults() : '') + renderShelvesPage();
-    // NOTE: callers of refreshPageBody() are responsible for calling bindShelvesEvents()
-    // to avoid double-binding (which causes toggle buttons to fire twice).
+
   } else if (state.view === 'access') {
     body.innerHTML = renderPendingAccessPage();
     bindPendingAccessEvents();
@@ -92,7 +90,7 @@ export async function switchToMyShelves() {
 
   await Promise.all([loadMyShelves(), loadPendingInvitations(), loadPendingRequests()]);
 
-  // Auto-select first shelf and load its books
+
   if (state.myShelves.length > 0) {
     if (!state.activeShelfId || !state.myShelves.find(s => s.id === state.activeShelfId)) {
       state.activeShelfId = state.myShelves[0].id;
@@ -180,7 +178,6 @@ function forceLogout() {
 
 setForceLogoutHandler(forceLogout);
 
-// ── Init ──────────────────────────────────────────────────────────────
 async function init() {
   const loading = document.getElementById('loading-screen');
 

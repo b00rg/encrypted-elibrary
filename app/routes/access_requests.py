@@ -13,9 +13,6 @@ from app.database import (
 from app.key_management import deserialize_certificate, deserialize_private_key, unwrap_group_key, wrap_group_key
 from .helpers import _auth_required, _shelf_key
 
-
-# ── Discover ──────────────────────────────────────────────────────────
-
 @api.route("/shelves/discover", methods=["GET"])
 def discover_shelves():
     err = _auth_required()
@@ -29,8 +26,6 @@ def discover_shelves():
     username = session["username"]
     return jsonify({"shelves": search_shelves(q, username)})
 
-
-# ── Join Requests (user-initiated) ────────────────────────────────────
 
 @api.route("/shelves/<int:shelf_id>/join-requests", methods=["POST"])
 def send_join_request(shelf_id: int):
@@ -150,9 +145,6 @@ def cancel_my_join_request(shelf_id: int):
         db_session.commit()
     return jsonify({"message": "Request cancelled"})
 
-
-# ── Invitations (owner-initiated) ─────────────────────────────────────
-
 @api.route("/shelves/<int:shelf_id>/invitations", methods=["POST"])
 def send_invitation(shelf_id: int):
     err = _auth_required()
@@ -228,8 +220,6 @@ def cancel_invitation(shelf_id: int, inv_id: int):
     return jsonify({"message": "Invitation cancelled"})
 
 
-# ── User: view & respond to invitations ──────────────────────────────
-
 @api.route("/user/invitations", methods=["GET"])
 def user_invitations():
     err = _auth_required()
@@ -292,8 +282,6 @@ def decline_invitation(inv_id: int):
     delete_access_request(inv_id)
     return jsonify({"message": "Invitation declined"})
 
-
-# ── User: pending requests they sent ─────────────────────────────────
 
 @api.route("/user/pending-requests", methods=["GET"])
 def user_pending_requests():

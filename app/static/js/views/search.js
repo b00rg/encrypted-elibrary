@@ -6,8 +6,6 @@ import { toggleReadLater, isReadLater } from '../readLater.js';
 import { showToast } from '../toast.js';
 import { openAddToShelfPopup } from './shelf-popup.js';
 import { openReviewModal } from './shelves-reviews.js';
-// refreshPageBody is imported from app.js.
-// The circular reference is safe: only called inside async functions/event handlers.
 import { refreshPageBody } from '../app.js';
 
 export function renderSearchResults() {
@@ -107,7 +105,6 @@ export function bindSearchResultEvents() {
     if (input) input.value = '';
   });
 
-  // Reviews button
   document.querySelectorAll('.search-review-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -115,7 +112,6 @@ export function bindSearchResultEvents() {
     });
   });
 
-  // Add to Shelf popup button
   document.querySelectorAll('.search-add-shelf-popup-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -129,7 +125,6 @@ export function bindSearchResultEvents() {
     });
   });
 
-  // Hover bookmark button (on cover)
   document.querySelectorAll('.search-section .hover-bookmark-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -149,7 +144,6 @@ export function bindSearchResultEvents() {
       } else if (!nowSaved && badge) {
         badge.remove();
       }
-      // Sync the card-actions rl-btn
       const rlBtn = card?.querySelector('.rl-btn');
       if (rlBtn) {
         rlBtn.innerHTML = nowSaved ? Icons.bookmarkFill : Icons.bookmark;
@@ -159,7 +153,6 @@ export function bindSearchResultEvents() {
     });
   });
 
-  // Card-actions rl-btn
   document.querySelectorAll('.search-section .rl-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();

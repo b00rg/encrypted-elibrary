@@ -3,7 +3,6 @@ import { escHtml } from '../utils.js';
 import { state } from '../state.js';
 import { api } from '../api.js';
 import { showToast } from '../toast.js';
-import { loadPendingInvitations, loadPendingRequests } from '../data.js';
 import { refreshPageBody, switchToMyShelves } from '../app.js';
 
 export function renderPendingAccessPage() {

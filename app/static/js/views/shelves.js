@@ -3,7 +3,6 @@ import { escHtml, renderCoverImg, coverUrl, workCoverUrl, SHELF_COLORS } from '.
 import { state } from '../state.js';
 import { isReadLater, getReadLater, getReadLaterMeta } from '../readLater.js';
 
-// ── Page render ───────────────────────────────────────────────────────
 
 export function renderShelvesPage() {
   const shelves = state.myShelves;
@@ -197,13 +196,11 @@ function renderAllBooksPanel() {
 function renderReadLaterPanel(rlSet) {
   if (state.loadingAllBooks) return renderSkeletonCards(6);
 
-  // Books already on a shelf
   const shelfBooks = deduplicateByWorkId(
     state.allShelvesBooks.filter(b => b.work_id && rlSet.has(b.work_id))
   );
   const shelfWorkIds = new Set(shelfBooks.map(b => b.work_id));
 
-  // Books only bookmarked from search (not on any shelf)
   const rlMeta = getReadLaterMeta();
   const searchOnlyBooks = [...rlSet]
     .filter(wid => !shelfWorkIds.has(wid) && rlMeta[wid])
@@ -268,7 +265,6 @@ function renderShelfPanel(shelf) {
   <div id="members-panel" class="members-panel hidden"></div>`;
 }
 
-/** Card for a book bookmarked from search but not yet on any shelf. */
 function renderSearchOnlyRLCard(book) {
   const url = book.cover_id ? coverUrl(book.cover_id) : (book.work_id ? workCoverUrl(book.work_id) : null);
   const shelves = state.myShelves || [];

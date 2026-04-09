@@ -3,7 +3,7 @@ import { escHtml } from '../utils.js';
 import { api } from '../api.js';
 import { showToast } from '../toast.js';
 
-/** Render a read-only star display (e.g. ★★★☆☆) */
+
 export function renderStarDisplay(rating) {
   if (!rating) return '';
   const stars = Array.from({ length: 5 }, (_, i) =>
@@ -12,7 +12,7 @@ export function renderStarDisplay(rating) {
   return `<span class="star-display" title="${rating}/5">${stars}</span>`;
 }
 
-/** Render an interactive star-picker widget */
+
 function renderStarInput() {
   return `
   <div class="star-input" id="star-input" role="radiogroup" aria-label="Rating">
@@ -23,19 +23,6 @@ function renderStarInput() {
   </div>`;
 }
 
-/**
- * Opens the review modal.
- *
- * Behaviour:
- * - If `shelfId` is given: shows only that shelf's reviews (group-chat style).
- * - If no `shelfId` (Read Later / search context): shows a shelf picker first;
- *   once a shelf is selected, shows its reviews.
- *
- * @param {object} opts
- * @param {string} opts.workId
- * @param {string} opts.title
- * @param {number|null} [opts.shelfId]
- */
 export async function openReviewModal({ workId, title, shelfId = null }) {
   const overlay = document.getElementById('modal-overlay');
   const content = document.getElementById('modal-content');
@@ -51,16 +38,13 @@ export async function openReviewModal({ workId, title, shelfId = null }) {
   const allEntries = ok ? (data.results || []) : [];
 
   if (shelfId) {
-    // Group-chat mode: single shelf
     const entry = allEntries.find(e => e.shelf_id === shelfId) || null;
     renderShelfChat(entry, shelfId, workId, title, allEntries);
   } else {
-    // Read Later / search: shelf picker
+
     renderShelfPicker(allEntries, workId, title);
   }
 }
-
-// ── Encrypted toggle helpers ────────────────────────────────────────────────
 
 function renderEncToggle() {
   return `<button class="enc-toggle-btn" id="enc-toggle">${Icons.lock} Show encrypted</button>`;
@@ -77,7 +61,6 @@ function bindEncToggle() {
   });
 }
 
-// ── Shelf chat (single shelf) ────────────────────────────────────────────────
 
 function renderShelfChat(entry, shelfId, workId, title, allEntries) {
   const content = document.getElementById('modal-content');
@@ -100,7 +83,7 @@ function buildChatHtml(shelfName, title, reviews, canPost, shelfId, bookId, avgR
       <span class="avg-rating-label">avg ${avgRating}/5 &middot; ${reviews.length} review${reviews.length !== 1 ? 's' : ''}</span>
     </div>` : '';
 
-  // Non-member shelves (excluding the one we're viewing) that have reviews
+
   const otherEncEntries = (allEntries || []).filter(e => !e.is_member && e.shelf_id !== shelfId && e.reviews.length > 0);
   const otherEncCount   = otherEncEntries.reduce((n, e) => n + e.reviews.length, 0);
   const encSectionHtml  = otherEncEntries.length === 0 ? '' : `
@@ -188,7 +171,6 @@ function renderMessageBubble(r) {
 function bindChatEvents(allReviews, shelfId, bookId, workId, title, allEntries) {
   bindEncToggle();
 
-  // Show more
   const showMoreBtn = document.getElementById('show-more-reviews');
   if (showMoreBtn) {
     showMoreBtn.addEventListener('click', () => {
@@ -198,10 +180,8 @@ function bindChatEvents(allReviews, shelfId, bookId, workId, title, allEntries) 
     });
   }
 
-  // Star input
   bindStarInput();
 
-  // Post review
   document.getElementById('post-review-btn')?.addEventListener('click', async () => {
     const text = document.getElementById('review-textarea')?.value.trim();
     if (!text) { showToast('Review cannot be empty', 'error'); return; }
@@ -231,7 +211,6 @@ function bindChatEvents(allReviews, shelfId, bookId, workId, title, allEntries) 
   });
 }
 
-// ── Shelf picker (Read Later / search context) ───────────────────────────────
 
 function renderShelfPicker(allEntries, workId, title) {
   const content = document.getElementById('modal-content');
@@ -267,7 +246,7 @@ function renderShelfPicker(allEntries, workId, title) {
 
   bindEncToggle();
 
-  // Click a shelf → open chat for that shelf
+
   content.querySelectorAll('.shelf-chat-pick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       openReviewModal({ workId, title, shelfId: parseInt(btn.dataset.shelfId, 10) });
@@ -322,8 +301,6 @@ function renderAllShelvesPreview(allEntries) {
 
   return memberHtml + encSectionHtml;
 }
-
-// ── Star input helpers ───────────────────────────────────────────────────────
 
 function bindStarInput() {
   const container = document.getElementById('star-input');
